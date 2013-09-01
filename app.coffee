@@ -42,7 +42,7 @@ app.get '/command', (req, res) ->
   gcc.stderr.on 'data', writer.write
   gcc.on 'close', -> res.end()
 
-fs.watch 'samples/', interval: 500, ->
+fs.watch process.argv[1], interval: 500, ->
   broadcast 'reload'
 
 startServer()
