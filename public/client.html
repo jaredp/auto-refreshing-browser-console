@@ -51,9 +51,11 @@
     $(function(){
 
       try {
-        var command = getQueryParam('q')
-        $('#command-field').val(command);
-        window.document.title = command;
+        var command = getQueryParam('q');
+        if (command) {
+	        $('#command-field').val(command);
+    	    window.document.title = command;
+    	}
       } catch (e) {}
 
       var load = function() {
