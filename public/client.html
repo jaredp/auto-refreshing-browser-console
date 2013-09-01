@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Browser Console</title>
+
+  <link rel="stylesheet" type="text/css" href="/public/bootstrap.min.css">
+  <style>
+
+  #reloadingBanner {
+    margin-top: 1em;
+    display: none;
+  }
+
+  #command-bar {
+    text-align: center;
+    margin: 1em;
+    margin-bottom: 2em;
+  }
+
+  #command-field {
+    font-size: 1.3em;
+    width: 30em;
+    margin-bottom: 0px;
+  }
+
+  #output {
+    font-family: monospace;
+  }
+
+  </style>
+
+  <script src="/public/jquery.js"></script>
+  <script type="text/javascript">
+
+    var getQueryParam = function(param) {
+      var params = location.search.substr(1).split("&");
+      for (var i = 0; i < params.length; i++) {
+        var parts = params[i].split('=');
+        if (parts[0] === param) return decodeURIComponent(parts[1].replace(/\+/g, ' '));
+      }
+    }
+
+    $(function(){
+
+      try {
+        $('#command-field').val(getQueryParam('q'));
+      } catch (e) {}
+
+      var load = function() {
+        $('#reloadingBanner').show(300);
+        $.get('/command' + window.location.search, function(data) { 
+          $("#output").html(data);
+          $('#reloadingBanner').hide(300);
+        });
+      };
+
+      new WebSocket('ws://localhost:7001').onmessage = function(event) {
+      	if (event.data === "reload") load();
+      }
+
+      load();
+    });
+
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <form id="command-bar">
+        <input type="text" name="q" id="command-field" />
+        <input class="btn btn-primary" type="submit" value="execute" />
+      </form>
+    </div>
+  </div>
+
+  <div class="container">
+    <div id="output"></div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="offset1 span10">
+        <div id="reloadingBanner" class="alert">loading...</div>
+      </div>
+    </div> 
+  </div>
+
+</body>
+</html>

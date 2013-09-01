@@ -2,6 +2,7 @@ fs = require 'fs'
 child_process = require 'child_process'
 express = require 'express'
 app = express()
+app.use('/public', express.static(__dirname + '/public'));
 WebSocketServer = require('ws').Server
 wss = new WebSocketServer(port: 7001)
 broadcast = (msg) -> client.send(msg) for client in wss.clients
@@ -29,20 +30,21 @@ class TerminalToHTML
       @yield lineEnd
 
 app.get '/', (req, res) ->
-	res.sendfile 'client.html'
+	res.sendfile 'public/client.html'
 
+rootDir = process.argv[2]
 
 app.get '/command', (req, res) ->
   res.send(400) if not command = req.query.q
   res.writeHead(200)
   writer = new TerminalToHTML (html) -> res.write html
 
-  gcc = child_process.spawn('bash', ['-c', command])
+  gcc = child_process.spawn('bash', ['-c', "cd #{rootDir}; #{command}"])
   gcc.stdout.on 'data', writer.write
   gcc.stderr.on 'data', writer.write
   gcc.on 'close', -> res.end()
 
-fs.watch process.argv[1], interval: 500, ->
+fs.watch rootDir, interval: 500, ->
   broadcast 'reload'
 
 startServer()
