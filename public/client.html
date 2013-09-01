@@ -6,11 +6,6 @@
   <link rel="stylesheet" type="text/css" href="/public/bootstrap.min.css">
   <style>
 
-  #reloadingBanner {
-    margin-top: 1em;
-    display: none;
-  }
-
   #command-bar {
     text-align: center;
     margin: 1em;
@@ -33,6 +28,19 @@
 
   #output {
     font-family: monospace;
+  }
+
+  #reloadingBanner {
+    margin-top: 1em;
+    -webkit-transition: 0.07s ease-out;
+    -moz-transition: 0.07s ease-out;
+    -ms-transition: 0.07s ease-out;
+    -o-transition: 0.07s ease-out;
+    transition: 0.07s ease-out;
+  }
+
+  .inactive-alert {
+    opacity: 0;
   }
 
   </style>
@@ -59,10 +67,10 @@
       } catch (e) {}
 
       var load = function() {
-        $('#reloadingBanner').show(300);
+        $('#reloadingBanner').removeClass('inactive-alert');
         $.get('/command' + window.location.search, function(data) { 
           $("#output").html(data);
-          $('#reloadingBanner').hide(300);
+          $('#reloadingBanner').addClass('inactive-alert');
         });
       };
 
@@ -92,7 +100,7 @@
   <div class="container">
     <div class="row">
       <div class="offset1 span10">
-        <div id="reloadingBanner" class="alert">loading...</div>
+        <div id="reloadingBanner" class="alert inactive-alert">loading...</div>
       </div>
     </div> 
   </div>
