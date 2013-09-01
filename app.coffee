@@ -29,25 +29,39 @@ class TerminalToHTML
       @yield line
       @yield lineEnd
 
-app.get '/', (req, res) ->
-	res.sendfile(__dirname + '/public/client.html')
+
+class SourceWatcher
+  constructor: (@dir, @onchange, @pauseCount = 0) -> @watch()
+  watch: -> @watcher = fs.watch @dir, @onchange
+  stop: -> @watcher?.close(); @watcher = null
+  pause: -> @stop() if @pauseCount++ == 0
+  unpause: -> @watch() if --@pauseCount == 0
+
 
 rootDir = process.argv[2] ? '.'
+watcher = new SourceWatcher rootDir, -> broadcast 'reload'
+
+
+app.get '/', (req, res) ->
+	res.sendfile(__dirname + '/public/client.html')
 
 app.get '/command', (req, res) ->
   return res.send(400) if not command = req.query.q
   
   res.writeHead(200)
   rewriter = new TerminalToHTML (html) -> res.write html
+  watcher.pause()
 
   gcc = child_process.spawn('bash', ['-c', command], cwd: rootDir)
   gcc.stdout.on 'data', rewriter.write
   gcc.stderr.on 'data', rewriter.write
-  gcc.on 'close', -> res.end()
-  gcc.stdin.end()
+  gcc.on 'close', ->
+    res.end()
 
-fs.watch rootDir, interval: 500, ->
-  broadcast 'reload'
+    # without setTimeout, sometimes infinite loops
+    setTimeout (-> watcher.unpause()), 500
+    
+  gcc.stdin.end()
 
 startServer()
 
