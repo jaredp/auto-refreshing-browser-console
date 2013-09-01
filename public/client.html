@@ -43,7 +43,9 @@
     $(function(){
 
       try {
-        $('#command-field').val(getQueryParam('q'));
+        var command = getQueryParam('q')
+        $('#command-field').val(command);
+        window.document.title = command;
       } catch (e) {}
 
       var load = function() {
