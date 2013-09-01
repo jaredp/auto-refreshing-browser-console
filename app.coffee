@@ -15,12 +15,12 @@ startServer = ->
 	Press Ctrl+C to exit
 	'''
 
-[lineStart, lineEnd] = ['<div>', '</div>']
-
 class TerminalToHTML
+  [lineStart, lineEnd] = ['<div>', '</div>']
+
   constructor: (@yield=(->), @textcolor='', @background='', @buffer='') ->
   write: (data) =>
-    @buffer += data
+    @buffer += data.toString()
     lines = @buffer.split('\n')
     @buffer = lines.pop()
 
@@ -30,21 +30,24 @@ class TerminalToHTML
       @yield lineEnd
 
 app.get '/', (req, res) ->
-	res.sendfile 'public/client.html'
+	res.sendfile(__dirname + '/public/client.html')
 
-rootDir = process.argv[2]
+rootDir = process.argv[2] ? '.'
 
 app.get '/command', (req, res) ->
-  res.send(400) if not command = req.query.q
+  return res.send(400) if not command = req.query.q
+  
   res.writeHead(200)
-  writer = new TerminalToHTML (html) -> res.write html
+  rewriter = new TerminalToHTML (html) -> res.write html
 
-  gcc = child_process.spawn('bash', ['-c', "cd #{rootDir}; #{command}"])
-  gcc.stdout.on 'data', writer.write
-  gcc.stderr.on 'data', writer.write
+  gcc = child_process.spawn('bash', ['-c', command], cwd: rootDir)
+  gcc.stdout.on 'data', rewriter.write
+  gcc.stderr.on 'data', rewriter.write
   gcc.on 'close', -> res.end()
+  gcc.stdin.end()
 
 fs.watch rootDir, interval: 500, ->
   broadcast 'reload'
 
 startServer()
+
