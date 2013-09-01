@@ -132,7 +132,7 @@
       res.end();
       return setTimeout((function() {
         return watcher.unpause();
-      }), 500);
+      }), 0);
     });
     return gcc.stdin.end();
   });

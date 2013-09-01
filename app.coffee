@@ -59,7 +59,7 @@ app.get '/command', (req, res) ->
     res.end()
 
     # without setTimeout, sometimes infinite loops
-    setTimeout (-> watcher.unpause()), 500
+    setTimeout (-> watcher.unpause()), 0
     
   gcc.stdin.end()
 
