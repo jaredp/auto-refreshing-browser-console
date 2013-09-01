@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Browser Console</title>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script type="text/javascript">
+
+    var getQueryParam = function(param) {
+      var params = location.search.substr(1).split("&");
+      for (var i = 0; i < params.length; i++) {
+        var parts = params[i].split('=');
+        if (parts[0] === param) return decodeURIComponent(parts[1].replace(/\+/g, ' '));
+      }
+    }
+
+    $(function(){
+
+      try {
+        $('#commandbar').val(getQueryParam('q'));
+      } catch (e) {}
+
+      var load = function() {
+        $('#reloadingBanner').show();
+        $.get('/command' + window.location.search, function(data) { 
+          $("#output").html(data);
+          $('#reloadingBanner').hide();
+        });
+      };
+
+      new WebSocket('ws://localhost:7001').onmessage = function(event) {
+      	if (event.data === "reload") load();
+      }
+
+      load();
+    });
+
+  </script>
+</head>
+<body>
+
+  <form>
+    <input type="text" name="q" id="commandbar" />
+    <input type="submit" value="run" />
+  </form>
+
+  <div id="reloadingBanner">loading...</div>
+  <div id="output"></div>
+
+</body>
+</html>
