@@ -1,11 +1,11 @@
-AutorefreshingBrowserConsole
+auto-refreshing-browser-console
 ============================
 
 Live reloaded output from command line apps in the browser
 
 ## Installation
 
-```npm install AutorefreshingBrowserConsole -g```
+```npm install auto-refreshing-browser-console -g```
 
 ## Usage
 
@@ -22,6 +22,6 @@ Press Ctrl+C to exit
 
 Enter a command in the text field and hit execute.  The command will run and the output will be shown in the browser.
 
-![sample](https://raw.github.com/jaredp/AutorefreshingBrowserConsole/master/screenshot.png)
+![sample](https://raw.github.com/jaredp/auto-refreshing-browser-console/master/screenshot.png)
 
 Now the cool part: whenever you change a file in the project, the browser will automatically refresh the results from your command.

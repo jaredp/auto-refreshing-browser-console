@@ -1,5 +1,5 @@
 {
-  "name": "AutorefreshingBrowserConsole",
+  "name": "auto-refreshing-browser-console",
   "version": "0.1.0",
   "description": "Live reloaded output from command line apps in the browser",
   "bin": {
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jaredp/AutorefreshingBrowserConsole.git"
+    "url": "https://github.com/jaredp/auto-refreshing-browser-console.git"
   },
   "keywords": [
     "live-reload",
@@ -26,6 +26,6 @@
   "license": "BSD",
   "readmeFilename": "README.md",
   "bugs": {
-    "url": "https://github.com/jaredp/AutorefreshingBrowserConsole/issues"
+    "url": "https://github.com/jaredp/auto-refreshing-browser-console/issues"
   }
 }
