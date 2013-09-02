@@ -58,15 +58,7 @@
 
     $(function(){
 
-      try {
-        var command = getQueryParam('q');
-        if (command) {
-	        $('#command-field').val(command);
-    	    window.document.title = command;
-    	}
-      } catch (e) {}
-
-      var load = function() {
+      var reload = function() {
         $('#reloadingBanner').removeClass('inactive-alert');
         $.get('/command' + window.location.search, function(data) { 
           $("#output").html(data);
@@ -75,10 +67,16 @@
       };
 
       new WebSocket('ws://localhost:7001').onmessage = function(event) {
-      	if (event.data === "reload") load();
+      	if (event.data === "reload") reload();
       }
 
-      load();
+      var command = getQueryParam('q');
+      if (command && command.length > 0) {
+        $('#command-field').val(command);
+        window.document.title = command;
+        reload();
+      }
+
     });
 
   </script>
