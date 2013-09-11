@@ -4,16 +4,6 @@ express = require 'express'
 app = express()
 app.use('/public', express.static(__dirname + '/public'));
 WebSocketServer = require('ws').Server
-wss = new WebSocketServer(port: 7001)
-broadcast = (msg) -> client.send(msg) for client in wss.clients
-
-startServer = ->
-	#also theoretically wss should start here...
-	app.listen 7000
-	console.log '''
-	Open http://localhost:7000 in Chrome
-	Press Ctrl+C to exit
-	'''
 
 class TerminalToHTML
   [lineStart, lineEnd] = ['<div>', '</div>']
@@ -37,13 +27,23 @@ class SourceWatcher
   pause: -> @stop() if @pauseCount++ == 0
   unpause: -> @watch() if --@pauseCount == 0
 
+{p: port, d: rootDir} = require('optimist')
+  .default(p: 7000, d: '.')
+  .argv
 
-rootDir = process.argv[2] ? '.'
 watcher = new SourceWatcher rootDir, -> broadcast 'reload'
+app.listen port
+wss = new WebSocketServer(port: port + 1)
+console.log """
+Open http://localhost:#{port}/ in Chrome
+Press Ctrl+C to exit
+"""
 
+
+broadcast = (msg) -> client.send(msg) for client in wss.clients
 
 app.get '/', (req, res) ->
-	res.sendfile(__dirname + '/public/client.html')
+  res.sendfile(__dirname + '/public/client.html')
 
 app.get '/command', (req, res) ->
   return res.send(400) if not command = req.query.q
@@ -62,6 +62,4 @@ app.get '/command', (req, res) ->
     setTimeout (-> watcher.unpause()), 0
     
   gcc.stdin.end()
-
-startServer()
 
