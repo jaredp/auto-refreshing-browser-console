@@ -1,6 +1,6 @@
 {
   "name": "auto-refreshing-browser-console",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Live reloaded output from command line apps in the browser",
   "bin": {
     "consoleserver": "bin.js"
