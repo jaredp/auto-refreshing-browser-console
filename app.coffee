@@ -5,6 +5,7 @@ app = express()
 app.use('/public', express.static(__dirname + '/public'));
 WebSocketServer = require('ws').Server
 
+
 class TerminalToHTML
   [lineStart, lineEnd] = ['<div>', '</div>']
 
@@ -31,17 +32,6 @@ class SourceWatcher
   .default(p: 7000, d: '.')
   .argv
 
-watcher = new SourceWatcher rootDir, -> broadcast 'reload'
-app.listen port
-wss = new WebSocketServer(port: port + 1)
-console.log """
-Open http://localhost:#{port}/ in Chrome
-Press Ctrl+C to exit
-"""
-
-
-broadcast = (msg) -> client.send(msg) for client in wss.clients
-
 app.get '/', (req, res) ->
   res.sendfile(__dirname + '/public/client.html')
 
@@ -62,4 +52,16 @@ app.get '/command', (req, res) ->
     setTimeout (-> watcher.unpause()), 0
     
   gcc.stdin.end()
+
+
+server = app.listen port
+wss = new WebSocketServer(server: server, path: '/ws')
+
+watcher = new SourceWatcher rootDir, ->
+  client.send('reload') for client in wss.clients
+
+console.log """
+Open http://localhost:#{port}/ in Chrome
+Press Ctrl+C to exit
+"""
 

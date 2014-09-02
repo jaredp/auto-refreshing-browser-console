@@ -13,7 +13,7 @@ Live reloaded output from command line apps in the browser
 
 `$ consoleserver -d projectDir` to use projectDir as the root of your project
 
-`$ consoleserver -p [number]` will run the server from port p.  If -p is omitted, the port defaults to 7000.  Port p+1 is also used by the program.
+`$ consoleserver -p [number]` will run the server from port p.  If -p is omitted, the port defaults to 7000.
 
 The program will print
 

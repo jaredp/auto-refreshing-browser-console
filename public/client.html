@@ -67,7 +67,7 @@
         });
       };
 
-      new WebSocket('ws://localhost:7001').onmessage = function(event) {
+      new WebSocket('ws://'+window.location.host+'/ws').onmessage = function(event) {
       	if (event.data === "reload") reload();
       }
 
